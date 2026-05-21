@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Pong
 {
@@ -20,6 +21,8 @@ namespace Pong
         private const int BallSize = 12;
         private float _ballTimer = 0f;
         private bool _ballInPlay = false;
+        private Random _random = new Random();
+        private SpriteFont _scoreFont;
 
 
         public Game1()
@@ -38,7 +41,7 @@ namespace Pong
             _leftPaddlePos = new Vector2(30, 320);
             _rightPaddlePos = new Vector2(1238, 320);
             _ballPos = new Vector2(640, 360);
-            _ballVelocity = new Vector2(200, 200);
+            ServeBall();
             _ballInPlay = false;
             _ballTimer = 0f;
             base.Initialize();
@@ -50,7 +53,7 @@ namespace Pong
 
             _pixel = new Texture2D(GraphicsDevice, 1, 1);
             _pixel.SetData(new[] { Color.White });
-
+            _scoreFont = Content.Load<SpriteFont>("ScoreFont");
             // TODO: use this.Content to load your game content here
         }
 
@@ -102,7 +105,7 @@ namespace Pong
                 {
                     _rightScore++;
                     _ballPos = new Vector2(640, 360);
-                    _ballVelocity = new Vector2(200, 200);
+                    ServeBall();
                     _ballInPlay = false;
                     _ballTimer = 0f;
                 }
@@ -111,7 +114,7 @@ namespace Pong
                 {
                     _leftScore++;
                     _ballPos = new Vector2(640, 360);
-                    _ballVelocity = new Vector2(200, 200);
+                    ServeBall();
                     _ballInPlay = false;
                     _ballTimer = 0f;
                 }
@@ -139,10 +142,19 @@ namespace Pong
             _spriteBatch.Draw(_pixel, new Rectangle((int)_leftPaddlePos.X, (int)_leftPaddlePos.Y,PaddleWidth, PaddleHeight), Color.White);
             _spriteBatch.Draw(_pixel, new Rectangle((int)_rightPaddlePos.X, (int)_rightPaddlePos.Y, PaddleWidth, PaddleHeight), Color.White);
             _spriteBatch.Draw(_pixel, new Rectangle((int)_ballPos.X, (int)_ballPos.Y, BallSize, BallSize), Color.White);
+            _spriteBatch.DrawString(_scoreFont, _leftScore.ToString(), new Vector2(400, 30), Color.White);
+            _spriteBatch.DrawString(_scoreFont, _rightScore.ToString(), new Vector2(850, 30), Color.White);
             _spriteBatch.End();
 
 
             base.Draw(gameTime);
+        }
+
+        private void ServeBall()
+        {
+            float x = _random.Next(0, 2) == 0 ? 200 : -200;
+            float y = _random.Next(0, 2) == 0 ? 200 : -200;
+            _ballVelocity = new Vector2(x, y);
         }
     }
 }
