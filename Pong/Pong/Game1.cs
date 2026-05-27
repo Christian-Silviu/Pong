@@ -37,7 +37,6 @@ namespace Pong
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             _leftPaddlePos = new Vector2(30, 320);
             _rightPaddlePos = new Vector2(1238, 320);
             _ballPos = new Vector2(640, 360);
@@ -54,15 +53,14 @@ namespace Pong
             _pixel = new Texture2D(GraphicsDevice, 1, 1);
             _pixel.SetData(new[] { Color.White });
             _scoreFont = Content.Load<SpriteFont>("ScoreFont");
-            // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            // TODO: Add your update logic here
+            
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             var keys = Keyboard.GetState();
 
             if (keys.IsKeyDown(Keys.W))
@@ -75,14 +73,15 @@ namespace Pong
             }
             if (keys.IsKeyDown(Keys.Up))
             {
-                _rightPaddlePos.Y -= 5;
+                _rightPaddlePos.Y -= 300 * dt;
             }
             if (keys.IsKeyDown(Keys.Down))
             {
-                _rightPaddlePos.Y += 5;
+                _rightPaddlePos.Y += 300 * dt;
             }
 
-            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _leftPaddlePos.Y = MathHelper.Clamp(_leftPaddlePos.Y, 0, 720 - PaddleHeight);
+            _rightPaddlePos.Y = MathHelper.Clamp(_rightPaddlePos.Y, 0, 720 - PaddleHeight);
 
             if (_ballInPlay)
             {
@@ -137,7 +136,6 @@ namespace Pong
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
             _spriteBatch.Begin();
             _spriteBatch.Draw(_pixel, new Rectangle((int)_leftPaddlePos.X, (int)_leftPaddlePos.Y,PaddleWidth, PaddleHeight), Color.White);
             _spriteBatch.Draw(_pixel, new Rectangle((int)_rightPaddlePos.X, (int)_rightPaddlePos.Y, PaddleWidth, PaddleHeight), Color.White);
