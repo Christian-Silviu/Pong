@@ -23,6 +23,10 @@ namespace Pong
         private bool _ballInPlay = false;
         private Random _random = new Random();
         private SpriteFont _scoreFont;
+        private SpriteFont _enterFont;
+        private const int winScore = 7;
+        private bool _gameOver = false;
+        private string winner;
 
 
         public Game1()
@@ -53,6 +57,7 @@ namespace Pong
             _pixel = new Texture2D(GraphicsDevice, 1, 1);
             _pixel.SetData(new[] { Color.White });
             _scoreFont = Content.Load<SpriteFont>("ScoreFont");
+            _enterFont = Content.Load<SpriteFont>("EnterFont");
         }
 
         protected override void Update(GameTime gameTime)
@@ -65,11 +70,11 @@ namespace Pong
 
             if (keys.IsKeyDown(Keys.W))
             {
-                _leftPaddlePos.Y -= 5;
+                _leftPaddlePos.Y -= 300 * dt;
             }
             if (keys.IsKeyDown(Keys.S))
             {
-                _leftPaddlePos.Y += 5;
+                _leftPaddlePos.Y += 300 * dt;
             }
             if (keys.IsKeyDown(Keys.Up))
             {
@@ -78,6 +83,21 @@ namespace Pong
             if (keys.IsKeyDown(Keys.Down))
             {
                 _rightPaddlePos.Y += 300 * dt;
+            }
+
+            if (_gameOver)
+            {
+                if (keys.IsKeyDown(Keys.Enter))
+                {
+                    _leftScore = 0;
+                    _rightScore = 0;
+                    _gameOver = false;
+                    _ballPos = new Vector2(640, 360);
+                    ServeBall();
+                    _ballInPlay = false;
+                    _ballTimer = 0f;
+                }
+                return;
             }
 
             _leftPaddlePos.Y = MathHelper.Clamp(_leftPaddlePos.Y, 0, 720 - PaddleHeight);
@@ -107,6 +127,11 @@ namespace Pong
                     ServeBall();
                     _ballInPlay = false;
                     _ballTimer = 0f;
+                    if (_rightScore == winScore)
+                    {
+                        _gameOver = true;
+                        winner = "P2";
+                    }
                 }
 
                 if (_ballPos.X >= 1280)
@@ -116,6 +141,11 @@ namespace Pong
                     ServeBall();
                     _ballInPlay = false;
                     _ballTimer = 0f;
+                    if (_leftScore == winScore)
+                    {
+                        _gameOver = true;
+                        winner = "P1";
+                    }
                 }
             }
             else
@@ -142,6 +172,15 @@ namespace Pong
             _spriteBatch.Draw(_pixel, new Rectangle((int)_ballPos.X, (int)_ballPos.Y, BallSize, BallSize), Color.White);
             _spriteBatch.DrawString(_scoreFont, _leftScore.ToString(), new Vector2(400, 30), Color.White);
             _spriteBatch.DrawString(_scoreFont, _rightScore.ToString(), new Vector2(850, 30), Color.White);
+            if (_gameOver)
+            {
+                string winText = winner + " Wins!";
+                Vector2 winSize = _scoreFont.MeasureString(winText);
+                _spriteBatch.DrawString(_scoreFont, winText, new Vector2(640 - winSize.X / 2, 330), Color.White);
+                string enterText = "Press Enter to play again";
+                Vector2 enterSize = _enterFont.MeasureString(enterText);
+                _spriteBatch.DrawString(_enterFont, enterText, new Vector2(640 - enterSize.X / 2, 400), Color.White);
+            }
             _spriteBatch.End();
 
 
@@ -150,8 +189,8 @@ namespace Pong
 
         private void ServeBall()
         {
-            float x = _random.Next(0, 2) == 0 ? 200 : -200;
-            float y = _random.Next(0, 2) == 0 ? 200 : -200;
+            float x = _random.Next(0, 2) == 0 ? 500 : -500;
+            float y = _random.Next(0, 2) == 0 ? 500 : -500;
             _ballVelocity = new Vector2(x, y);
         }
     }
