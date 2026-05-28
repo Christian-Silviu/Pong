@@ -189,8 +189,8 @@ namespace Pong
 
         private void ServeBall()
         {
-            float x = _random.Next(0, 2) == 0 ? 500 : -500;
-            float y = _random.Next(0, 2) == 0 ? 500 : -500;
+            float x = _random.Next(0, 2) == 0 ? 300 : -300;
+            float y = _random.Next(0, 2) == 0 ? 300 : -300;
             _ballVelocity = new Vector2(x, y);
         }
     }
